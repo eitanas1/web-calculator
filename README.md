@@ -1,7 +1,7 @@
 
 # Web-calculator
 
-web-calculator is a web service that allows users to send arithmetic expressions via HTTP and receive their results.
+web-calculator is a web service that allows users to send arithmetic expressions via HTTP and receive their results
 
 ## Functionality
 
