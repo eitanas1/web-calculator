@@ -1,0 +1,112 @@
+---
+- hosts: control_node
+  become: yes
+  tasks:
+    - name: Install curl (if not already installed)
+      package:
+        name: curl
+        state: present
+
+    - name: Download Helm installation script
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+
+    - name: Run Helm installation script
+      command: /tmp/get_helm.sh
+      args:
+        creates: /usr/local/bin/helm
+      register: helm_install_result
+      changed_when: false
+
+    - name: Add /usr/local/bin to PATH
+      lineinfile:
+        path: ~/.bashrc
+        line: 'export PATH=$PATH:/usr/local/bin'
+      when: helm_install_result.rc == 0
+
+    - name: Set up kubectl for the current user
+      command: "{{ item }}"
+      with_items:
+        - "mkdir -p $HOME/.kube"
+        - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+#        - "chown $(id -u):$(id -g) $HOME/.kube/config"
+
+- hosts: master
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install curl (if not already installed)
+      package:
+        name: curl
+        state: present
+
+    - name: Download Helm installation script
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+
+    - name: Run Helm installation script
+      command: /tmp/get_helm.sh
+      args:
+        creates: /usr/local/bin/helm
+      register: helm_install_result
+      changed_when: false
+
+    - name: Add /usr/local/bin to PATH
+      lineinfile:
+        path: ~/.bashrc
+        line: 'export PATH=$PATH:/usr/local/bin'
+      when: helm_install_result.rc == 0
+
+    - name: Install kubeadm, kubelet, and kubectl
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - kubeadm
+        - kubelet
+        - kubectl
+
+    - name: Initialize Kubernetes master
+      command: kubeadm init --pod-network-cidr=10.244.0.0/16
+      register: kubeadm_output
+      ignore_errors: yes
+
+    - name: Set up kubectl for the current user
+      command: "{{ item }}"
+      with_items:
+        - "mkdir -p $HOME/.kube"
+        - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+#        - "chown $(id -u):$(id -g) $HOME/.kube/config"
+
+    - name: Install Calico network plugin
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+      when: "'calico' in kubeadm_output.stdout"
+
+- hosts: workers
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install kubeadm, kubelet, and kubectl
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - kubeadm
+        - kubelet
+        - kubectl
+
+    - name: Join worker nodes to the cluster
+      command: "{{ hostvars['master']['kubeadm_output']['stdout_lines'][0] }}"
+      when: "'kubeadm join' in hostvars['master']['kubeadm_output']['stdout']"
