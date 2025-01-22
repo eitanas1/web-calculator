@@ -100,6 +100,7 @@ In order to monitor the app in k8s cluster, Prometheus and Grafana can be instal
 *  Logging - logs should be collected across the k8s cluster and should be published to a central location for log analysis and storage. Log Management Tools such as ELK, Sematext Logs, Datadog, Logz.io etc. should be used.
 
 ## API
+
 Base URL will be dynamic according to the k8s distribution and the service type.
 Details will be printed after installing the helm chart.
 Default base URL: http://localhost:8080
