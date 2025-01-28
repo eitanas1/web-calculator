@@ -31,8 +31,8 @@ web-calculator is a web service that allows users to send arithmetic expressions
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/eitanas1/web-calculator-golang
-   cd web-calculator-golang
+   git clone https://github.com/eitanas1/web-calculator
+   cd web-calculator
    ```
 
 2. Configure k8s control-plane's IP and k8s nodes's IP in ansible/inventory.ini file and test the connection
