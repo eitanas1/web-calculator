@@ -119,7 +119,7 @@ Default base URL: http://localhost:8080
 - 400 - Bad request
 - 404 - Resource not found
 - 405 - Method not allowed
-- 422 - Invalid expression (e.g., English letter instead of a number)
+- 422 - Invalid expression (e.g. English letter instead of a number)
 - 500 - Internal server error
 
 ### Usage Examples
