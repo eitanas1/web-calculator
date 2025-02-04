@@ -5,9 +5,9 @@ web-calculator is a web service that allows users to send arithmetic expressions
 
 ## Functionality
 
-- Supports addition, subtraction, multiplication, division operations, and expressions in parentheses
-- Expressions can be entered with or without spaces between numbers and operands
-- The calculator accepts positive integers as input
+- Supports addition, subtraction, multiplication, division operations, and expressions in parentheses.
+- Expressions can be entered with or without spaces between numbers and operands.
+- The calculator accepts positive integers as input.
 
 ## Requirements
 
